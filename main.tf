@@ -24,16 +24,11 @@ resource "aws_route53_zone" "aws_subdomain" {
   name = "${var.sub_domain}-${random_integer.random.result}.${var.main_domain}"
 }
 
-data "aws_route53_zone" "aws_subdomain" {
-  name = "${var.sub_domain}-${random_integer.random.result}.${var.main_domain}"
-  depends_on = [aws_route53_zone.aws_subdomain]
-}
-
 resource "cloudflare_record" "aws_subdomain_dns" {
-  count      = length(data.aws_route53_zone.aws_subdomain.name_servers)
+  count      = 4
   zone_id    = data.cloudflare_zone.main_domain.id
   name       = var.sub_domain
-  value      = data.aws_route53_zone.aws_subdomain.name_servers[count.index]
+  value      = aws_route53_zone.aws_subdomain.name_servers[count.index]
   type       = "NS"
-  depends_on = [data.aws_route53_zone.aws_subdomain]
+  depends_on = [aws_route53_zone.aws_subdomain]
 }
