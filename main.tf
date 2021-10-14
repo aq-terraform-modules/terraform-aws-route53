@@ -35,4 +35,5 @@ resource "cloudflare_record" "aws_subdomain_dns" {
   name       = var.sub_domain
   value      = data.aws_route53_zone.aws_subdomain.name_servers[count.index]
   type       = "NS"
+  depends_on = [data.aws_route53_zone.aws_subdomain.name_servers]
 }
